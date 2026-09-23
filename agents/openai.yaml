@@ -1,0 +1,4 @@
+interface:
+  display_name: "Commerce Source Auditor"
+  short_description: "Audit product claims, provenance, and duplicates"
+  default_prompt: "Use $commerce-source-auditor to audit this product catalog before publishing."
