@@ -9,7 +9,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 
 def valid_url(value: Any) -> bool:
@@ -17,6 +17,12 @@ def valid_url(value: Any) -> bool:
         return False
     parsed = urlparse(value.strip())
     return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
+
+
+def canonical_url(value: str) -> str:
+    parsed = urlparse(value.strip())
+    path = parsed.path.rstrip("/") or "/"
+    return urlunparse((parsed.scheme.lower(), parsed.netloc.lower(), path, parsed.params, parsed.query, ""))
 
 
 def issue(level: str, code: str, index: int, product_id: str, message: str) -> dict[str, Any]:
@@ -56,7 +62,7 @@ def audit(products: list[Any]) -> list[dict[str, Any]]:
         if not valid_url(source_url):
             findings.append(issue("error", "invalid_source_url", index, product_id, "source_url must be an HTTP(S) URL"))
         else:
-            sources[str(source_url).strip()].append(index)
+            sources[canonical_url(str(source_url))].append(index)
 
         images = raw.get("images", [])
         if not isinstance(images, list):

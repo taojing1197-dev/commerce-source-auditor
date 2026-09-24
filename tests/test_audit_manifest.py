@@ -29,6 +29,15 @@ class AuditManifestTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertGreaterEqual(report["errors"], 4)
 
+    def test_equivalent_source_urls_are_duplicates(self):
+        first = {"id": "p1", "title": "One", "source_url": "https://EXAMPLE.com/p/", "images": []}
+        second = {"id": "p2", "title": "Two", "source_url": "https://example.com/p#details", "images": []}
+        result = self.run_audit([first, second])
+        report = json.loads(result.stdout)
+        duplicate_warnings = [item for item in report["findings"] if item["code"] == "duplicate_source"]
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(len(duplicate_warnings), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -2,7 +2,7 @@
 
 An open-source Codex skill and zero-dependency CLI for auditing product-catalog provenance before publication.
 
-It checks stable IDs, source URLs, evidence-backed claims, image records, and duplicate IDs or source pages. The skill is useful for marketplace imports, AI-assisted commerce copy, catalog migrations, and product-data synchronization.
+It checks stable IDs, source URLs, evidence-backed claims, image records, and duplicate IDs or equivalent source pages. URL matching normalizes host case, fragments, and trailing slashes without discarding meaningful query parameters. The skill is useful for marketplace imports, AI-assisted commerce copy, catalog migrations, and product-data synchronization.
 
 ## Install and use
 
