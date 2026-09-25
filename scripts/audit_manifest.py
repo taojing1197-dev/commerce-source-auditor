@@ -25,6 +25,11 @@ def canonical_url(value: str) -> str:
     return urlunparse((parsed.scheme.lower(), parsed.netloc.lower(), path, parsed.params, parsed.query, ""))
 
 
+def text_value(value: Any) -> str:
+    """Return trimmed text without turning null into the literal string 'None'."""
+    return value.strip() if isinstance(value, str) else ""
+
+
 def issue(level: str, code: str, index: int, product_id: str, message: str) -> dict[str, Any]:
     return {"level": level, "code": code, "index": index, "product_id": product_id, "message": message}
 
@@ -50,8 +55,8 @@ def audit(products: list[Any]) -> list[dict[str, Any]]:
             findings.append(issue("error", "invalid_product", index, "", "product must be an object"))
             continue
 
-        product_id = str(raw.get("id", "")).strip()
-        title = str(raw.get("title", "")).strip()
+        product_id = text_value(raw.get("id"))
+        title = text_value(raw.get("title"))
         source_url = raw.get("source_url")
         if not product_id:
             findings.append(issue("error", "missing_id", index, "", "stable product id is required"))
@@ -79,14 +84,14 @@ def audit(products: list[Any]) -> list[dict[str, Any]]:
             findings.append(issue("error", "invalid_claims", index, product_id, "claims must be an array"))
             continue
         for claim_index, claim in enumerate(claims):
-            if not isinstance(claim, dict) or not str(claim.get("text", "")).strip():
+            if not isinstance(claim, dict) or not text_value(claim.get("text")):
                 findings.append(issue("error", "invalid_claim", index, product_id, f"claim {claim_index} needs text"))
                 continue
             evidence = claim.get("evidence")
             if not isinstance(evidence, dict) or not valid_url(evidence.get("source_url")):
                 findings.append(issue("error", "missing_evidence_url", index, product_id, f"claim {claim_index} needs an evidence source_url"))
                 continue
-            if not any(str(evidence.get(key, "")).strip() for key in ("quote", "field", "value")):
+            if not any(text_value(evidence.get(key)) for key in ("quote", "field", "value")):
                 findings.append(issue("error", "missing_evidence_detail", index, product_id, f"claim {claim_index} needs quote, field, or value evidence"))
 
     for product_id, indexes in ids.items():
@@ -96,7 +101,7 @@ def audit(products: list[Any]) -> list[dict[str, Any]]:
     for source_url, indexes in sources.items():
         if len(indexes) > 1:
             for index in indexes:
-                product_id = str(products[index].get("id", "")) if isinstance(products[index], dict) else ""
+                product_id = text_value(products[index].get("id")) if isinstance(products[index], dict) else ""
                 findings.append(issue("warning", "duplicate_source", index, product_id, f"source URL appears at indexes {indexes}"))
     return findings
 

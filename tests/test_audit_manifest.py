@@ -38,6 +38,20 @@ class AuditManifestTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertEqual(len(duplicate_warnings), 2)
 
+    def test_null_required_values_do_not_become_text(self):
+        payload = [{
+            "id": None,
+            "title": None,
+            "source_url": "https://example.com/p1",
+            "images": [],
+            "claims": [{"text": "Claim", "evidence": {"source_url": "https://example.com/p1", "field": None}}],
+        }]
+        result = self.run_audit(payload)
+        report = json.loads(result.stdout)
+        codes = {item["code"] for item in report["findings"]}
+        self.assertEqual(result.returncode, 1)
+        self.assertTrue({"missing_id", "missing_title", "missing_evidence_detail"}.issubset(codes))
+
 
 if __name__ == "__main__":
     unittest.main()
