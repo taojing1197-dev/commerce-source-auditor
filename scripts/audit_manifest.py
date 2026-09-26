@@ -16,7 +16,12 @@ def valid_url(value: Any) -> bool:
     if not isinstance(value, str):
         return False
     parsed = urlparse(value.strip())
-    return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
+    return (
+        parsed.scheme in {"http", "https"}
+        and bool(parsed.netloc)
+        and parsed.username is None
+        and parsed.password is None
+    )
 
 
 def canonical_url(value: str) -> str:

@@ -5,6 +5,7 @@ An open-source Codex skill and zero-dependency CLI for auditing product-catalog 
 It checks stable IDs, source URLs, evidence-backed claims, image records, and duplicate IDs or equivalent source pages. URL matching normalizes host case, fragments, and trailing slashes without discarding meaningful query parameters. The skill is useful for marketplace imports, AI-assisted commerce copy, catalog migrations, and product-data synchronization.
 
 Required text fields reject JSON `null` values instead of accidentally treating them as the literal text `None`.
+Source and evidence URLs containing embedded usernames or passwords are rejected to prevent credentials from leaking into catalogs and reports.
 
 ## Install and use
 

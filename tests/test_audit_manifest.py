@@ -52,6 +52,13 @@ class AuditManifestTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertTrue({"missing_id", "missing_title", "missing_evidence_detail"}.issubset(codes))
 
+    def test_source_urls_with_embedded_credentials_are_rejected(self):
+        payload = [{"id": "p1", "title": "One", "source_url": "https://user:secret@example.com/p1", "images": []}]
+        result = self.run_audit(payload)
+        report = json.loads(result.stdout)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("invalid_source_url", {item["code"] for item in report["findings"]})
+
 
 if __name__ == "__main__":
     unittest.main()
