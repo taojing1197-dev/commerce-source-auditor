@@ -15,7 +15,10 @@ from urllib.parse import urlparse, urlunparse
 def valid_url(value: Any) -> bool:
     if not isinstance(value, str):
         return False
-    parsed = urlparse(value.strip())
+    candidate = value.strip()
+    if any(character.isspace() or ord(character) < 32 for character in candidate):
+        return False
+    parsed = urlparse(candidate)
     return (
         parsed.scheme in {"http", "https"}
         and bool(parsed.netloc)

@@ -59,6 +59,13 @@ class AuditManifestTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("invalid_source_url", {item["code"] for item in report["findings"]})
 
+    def test_source_urls_with_whitespace_are_rejected(self):
+        payload = [{"id": "p1", "title": "One", "source_url": "https://example.com/product one", "images": []}]
+        result = self.run_audit(payload)
+        report = json.loads(result.stdout)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("invalid_source_url", {item["code"] for item in report["findings"]})
+
 
 if __name__ == "__main__":
     unittest.main()
