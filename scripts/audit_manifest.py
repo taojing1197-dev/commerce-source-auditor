@@ -19,9 +19,14 @@ def valid_url(value: Any) -> bool:
     if any(character.isspace() or ord(character) < 32 for character in candidate):
         return False
     parsed = urlparse(candidate)
+    try:
+        hostname = parsed.hostname
+        parsed.port
+    except ValueError:
+        return False
     return (
         parsed.scheme in {"http", "https"}
-        and bool(parsed.netloc)
+        and bool(hostname)
         and parsed.username is None
         and parsed.password is None
     )
