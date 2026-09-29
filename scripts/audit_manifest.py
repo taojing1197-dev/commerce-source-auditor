@@ -34,8 +34,13 @@ def valid_url(value: Any) -> bool:
 
 def canonical_url(value: str) -> str:
     parsed = urlparse(value.strip())
+    scheme = parsed.scheme.lower()
+    hostname = (parsed.hostname or "").lower()
+    host = f"[{hostname}]" if ":" in hostname else hostname
+    port = parsed.port
+    netloc = host if (scheme, port) in {("http", 80), ("https", 443)} else parsed.netloc.lower()
     path = parsed.path.rstrip("/") or "/"
-    return urlunparse((parsed.scheme.lower(), parsed.netloc.lower(), path, parsed.params, parsed.query, ""))
+    return urlunparse((scheme, netloc, path, parsed.params, parsed.query, ""))
 
 
 def text_value(value: Any) -> str:

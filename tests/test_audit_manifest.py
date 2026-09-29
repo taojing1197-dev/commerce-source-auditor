@@ -38,6 +38,15 @@ class AuditManifestTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertEqual(len(duplicate_warnings), 2)
 
+    def test_default_ports_do_not_hide_duplicate_sources(self):
+        first = {"id": "p1", "title": "One", "source_url": "https://example.com:443/p", "images": []}
+        second = {"id": "p2", "title": "Two", "source_url": "https://example.com/p", "images": []}
+        result = self.run_audit([first, second])
+        report = json.loads(result.stdout)
+        duplicate_warnings = [item for item in report["findings"] if item["code"] == "duplicate_source"]
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(len(duplicate_warnings), 2)
+
     def test_null_required_values_do_not_become_text(self):
         payload = [{
             "id": None,
