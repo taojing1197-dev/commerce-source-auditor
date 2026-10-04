@@ -82,6 +82,21 @@ class AuditManifestTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("invalid_source_url", {item["code"] for item in report["findings"]})
 
+    def test_image_records_must_be_safe_http_urls(self):
+        payload = [{
+            "id": "p1",
+            "title": "One",
+            "source_url": "https://example.com/p1",
+            "images": ["image.jpg", "https://user:secret@example.com/image.jpg"],
+        }]
+        result = self.run_audit(payload)
+        report = json.loads(result.stdout)
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(
+            [item["code"] for item in report["findings"]].count("invalid_image_url"),
+            2,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

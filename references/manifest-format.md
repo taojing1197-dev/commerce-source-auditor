@@ -25,6 +25,7 @@ Use this format when a source catalog can be exported without losing business-sp
 ```
 
 The top level may instead be a JSON array or use `items`. Each claim needs a non-empty `text` and evidence containing a product-specific `source_url` plus either `quote`, `field`, or `value`.
+Every `images` entry must be an HTTP(S) URL without embedded credentials.
 
 Run:
 

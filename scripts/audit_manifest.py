@@ -96,6 +96,8 @@ def audit(products: list[Any]) -> list[dict[str, Any]]:
             for image_index, image_value in enumerate(images):
                 if not isinstance(image_value, str) or not image_value.strip():
                     findings.append(issue("error", "invalid_image", index, product_id, f"image {image_index} is empty"))
+                elif not valid_url(image_value):
+                    findings.append(issue("error", "invalid_image_url", index, product_id, f"image {image_index} must be an HTTP(S) URL"))
 
         claims = raw.get("claims", [])
         if not isinstance(claims, list):
