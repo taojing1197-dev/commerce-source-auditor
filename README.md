@@ -6,7 +6,7 @@ It checks stable IDs, source URLs, evidence-backed claims, image records, and du
 
 Required text fields reject JSON `null` values instead of accidentally treating them as the literal text `None`.
 Source and evidence URLs containing embedded usernames or passwords are rejected to prevent credentials from leaking into catalogs and reports.
-Source and image URLs containing whitespace, control characters, invalid ports, non-HTTP schemes, or embedded credentials are rejected before publication.
+Source and image URLs containing whitespace (including surrounding whitespace), control characters, invalid ports, non-HTTP schemes, or embedded credentials are rejected before publication.
 
 ## Install and use
 

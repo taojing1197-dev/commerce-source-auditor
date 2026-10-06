@@ -16,6 +16,8 @@ def valid_url(value: Any) -> bool:
     if not isinstance(value, str):
         return False
     candidate = value.strip()
+    if candidate != value:
+        return False
     if any(character.isspace() or ord(character) < 32 for character in candidate):
         return False
     parsed = urlparse(candidate)
