@@ -20,8 +20,8 @@ def valid_url(value: Any) -> bool:
         return False
     if any(character.isspace() or ord(character) < 32 for character in candidate):
         return False
-    parsed = urlparse(candidate)
     try:
+        parsed = urlparse(candidate)
         hostname = parsed.hostname
         parsed.port
     except ValueError:

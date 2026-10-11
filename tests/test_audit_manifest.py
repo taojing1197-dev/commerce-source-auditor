@@ -104,6 +104,34 @@ class AuditManifestTests(unittest.TestCase):
             2,
         )
 
+    def test_malformed_bracketed_urls_are_record_findings(self):
+        for malformed in ('https://[::1/product', 'https://[not-an-ip]/product'):
+            for location, expected_code in (
+                ('source', 'invalid_source_url'),
+                ('image', 'invalid_image_url'),
+                ('evidence', 'missing_evidence_url'),
+            ):
+                with self.subTest(url=malformed, location=location):
+                    product = {
+                        'id': 'p1', 'title': 'One', 'source_url': 'https://example.com/p1',
+                        'images': ['https://example.com/p1.jpg'],
+                        'claims': [{'text': 'Cotton', 'evidence': {
+                            'source_url': 'https://example.com/p1', 'field': 'material'}}],
+                    }
+                    if location == 'source':
+                        product['source_url'] = malformed
+                    elif location == 'image':
+                        product['images'] = [malformed]
+                    else:
+                        product['claims'][0]['evidence']['source_url'] = malformed
+                    # A bad URL must not abort checks on later records.
+                    result = self.run_audit([product, {'title': 'Missing ID',
+                        'source_url': 'https://example.com/p2'}])
+                    self.assertEqual(result.returncode, 1, result.stderr)
+                    report = json.loads(result.stdout)
+                    codes = {item['code'] for item in report['findings']}
+                    self.assertTrue({expected_code, 'missing_id'}.issubset(codes))
+
 
 if __name__ == "__main__":
     unittest.main()
